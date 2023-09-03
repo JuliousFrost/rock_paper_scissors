@@ -1,78 +1,117 @@
-function getComputerChoice(){
+function getComputerChoice() {
     const choice = ["Rock", "Paper", "Scissors"]
 
-    var item = choice[Math.floor(Math.random()*choice.length)];
+    var item = choice[Math.floor(Math.random() * choice.length)];
 
     return item
 
 
 }
+let player_score = 0
+let com_score = 0
+let finalWinner = ""
 
+function playRound(playerSelection, computerSelection) {
+    if (playerSelection === computerSelection) {
+        return 0;
+    }
+    else if (playerSelection === "Rock" && computerSelection === "Scissors" ||
+        playerSelection === "Paper" && computerSelection === "Rock" ||
+        playerSelection === "Scissors" && computerSelection === "Paper"
+    ) {
+        return 1;
+    }
 
-function playRound(playerSelection, computerSelection){
-    if (playerSelection === computerSelection){
-        return ("TIE")
-    }
-    else if(playerSelection === "Rock" && computerSelection==="Paper"){
-        return ("Computer Wins")
-    }
-    else if(playerSelection === "Rock" && computerSelection==="Scissors"){
-        return ("Player Wins")
-    }
-    else if(playerSelection === "Paper" && computerSelection==="Rock"){
-        return ("Player Wins")
-    }
-    else if(playerSelection === "Paper" && computerSelection==="Scissors"){
-        return ("Computer Wins")
-    }
-    else if(playerSelection === "Scissors" && computerSelection==="Paper"){
-        return ("Player Wins")
-    }
-    else if(playerSelection === "Scissors" && computerSelection==="Rock"){
-        return ("Computer Wins")
-    }
+    else return 2;
 }
 
 
 
 
-function game(){
+function game(e) {
 
-    let player_score = 0
-    let com_score = 0
+    let winner = parseInt(playRound(e.target.id, getComputerChoice()))
 
-    for (let i =0;i<5;i++){
-        let playerSelection = prompt("please write Rock / Paper / Scissors")
-        console.log("Player - " + playerSelection)
+    switch (winner) {
 
-        let computerSelection = getComputerChoice()
-        console.log("Computer - " +computerSelection)
-
-        round_result = playRound(playerSelection,computerSelection)
-        console.log(round_result)
-        console.log("..........................................")
-
-
-        if(round_result === "Player Wins"){
-            player_score = player_score + 1
-        }
-        if(round_result === "Computer Wins"){
-            com_score = com_score+1
-        }
+        case 0:
+            break;
+        case 1:
+            player_score++;
+            break;
+        case 2:
+            com_score++;
+            break;
+        default:
+            break;
+            
+    }
+    addRoundInfo();
 
 
+}
+
+
+
+
+function getWinner(player_score,com_score) {
+     if (player_score > com_score) {
+        return "You are the winner of the match";
+    }
+    else {
+        return "AI is the winner of the match";
 
     }
 
-    if (player_score === com_score){
-        console.log("Match Tie")
-    }
-    else if (player_score>com_score){
-        console.log("You are the winner of the match")
+
+}
+
+let checkWinner = () => {
+    if (player_score == 5 || com_score == 5){
+        return true;
     }
     else{
-        console.log("Humanity has lost")
+        return false;
+    } 
+};
+
+
+
+function addRoundInfo(){
+    const mainController = document.querySelector(".mainContain");
+    const roundInfo = document.createElement("p");
+    roundInfo.innerText = `Your Score is ${player_score} | AI Score is ${com_score}`;
+    mainController.appendChild(roundInfo);
+
+    if(checkWinner()){
+        const mainContain = document.querySelector(".mainContain");
+        const roundInfo = document.createElement("p");
+        if (player_score > com_score) {
+            finalWinner = "You are the winner of the match";
+        }
+        else {
+            finalWinner =  "AI is the winner of the match";
+    
+        }
+        roundInfo.innerText = finalWinner;
+        mainContain.appendChild(roundInfo);
+        player_score = 0
+        com_score = 0
+
     }
 }
 
-game()
+function removeRoundInfo(){
+    const mainContainer = document.querySelector(".mainContain");
+    while(mainContainer.firstChild){
+        mainContainer.removeChild(mainContainer.firstChild);
+    }
+    player_score = 0
+    com_score = 0
+}
+
+const buttons = document.querySelectorAll('.playButton');
+buttons.forEach(button => button.addEventListener('click', game));
+
+const clearBtn = document.querySelector("#clearBtn");
+clearBtn.addEventListener('click', removeRoundInfo);
